@@ -6,7 +6,7 @@ export function Game () {
   const [game, setGame] = useState([])
   const [stores, setStores] = useState([])
   const [isLoading, setLoading] = useState(true)
-  const [dealStores, setDealStores] = useState([])
+  const ds = []
   const location = useLocation()
   const deal = location.state.deal
 
@@ -22,10 +22,14 @@ export function Game () {
 
   const insertStores = () => {
     if (!isLoading) {
-      setDealStores(game.deals.map((d) => stores.filter((s) => {
-        return s.storeID.includes(d.storeID)
-      })))
-      console.log(dealStores)
+      for (let i = 0; i < game.deals.length; i++) {
+        for (let k = 0; k < stores.length; k++) {
+          if (game.deals[i].storeID === stores[k].storeID) {
+            ds.push({ storeID: stores[k].storeID, storeName: stores[k].storeName, icon: stores[k].images.icon })
+          }
+        }
+      }
+      console.log(ds.map((d) => d.storeName))
     }
   }
 
@@ -47,16 +51,17 @@ export function Game () {
         : (
           <div className='w-3/4 flex flex-col items-center'>
             <p className='text-[32px] font-bold'>{game.info.title}</p>
-            <img src={game.info.thumb} alt={game.info.title} className='mt-8' />
+            <img src={game.info.thumb} alt={game.info.title} className='mt-8 max-w-[240px] max-h-[480px]' />
             <div className='w-full flex flex-col items-center mt-5'>
+              <p className='text-xl font-bold mb-5'>Price: {game.cheapestPriceEver.price}€</p>
               <p className='text-xl underline'>List of deal stores:</p>
-              {
-                dealStores.length !== 0 && dealStores.map((ds) => (
+              <div className='flex w-full'>
+                {
                   ds.map((d) => (
-                    <Badge className='bg-red-200' key={d.storeID} size='sm'>{d.storeName}</Badge>
+                    <Badge key={d.storeID} size='sm'>{d.storeName}</Badge>
                   ))
-                ))
-              }
+                }
+              </div>
             </div>
           </div>
           )}
